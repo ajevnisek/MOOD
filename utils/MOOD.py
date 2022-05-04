@@ -45,8 +45,11 @@ def odin_score(inputs, TF, model, L, temper=1000, noiseMagnitude=0.001):
         inputs = Variable(inputs, requires_grad = True)
         inputs = inputs.cuda()
         inputs.retain_grad()
-        
         outputs = model(inputs)[0][i]
+        is_resnet = False
+        if not outputs.shape:
+            outputs = model(inputs)
+            is_resnet = True
         
         maxIndexTemp = np.argmax(outputs.data.cpu().numpy(), axis=1)
         
@@ -63,14 +66,26 @@ def odin_score(inputs, TF, model, L, temper=1000, noiseMagnitude=0.001):
     
         # Adding small perturbations to images
         tempInputs = torch.add(inputs.data,  -noiseMagnitude, gradient)
-        outputs = model(Variable(tempInputs))[0][i]
+        if is_resnet:
+            outputs = model(Variable(tempInputs))
+        else:
+            outputs = model(Variable(tempInputs))[0][i]
+        # outputs.shape : torch.Size([64, 10])
         outputs = outputs / temper
         # Calculating the confidence after adding perturbations
         nnOutputs = outputs.data.cpu()
         nnOutputs = nnOutputs.numpy()
-        nnOutputs = nnOutputs - np.max(nnOutputs, axis=1, keepdims=True)
-        nnOutputs = np.exp(nnOutputs) / np.sum(np.exp(nnOutputs), axis=1, keepdims=True)
-        scores = np.max(nnOutputs, axis=1)
+        if is_resnet:
+            nnOutputs = nnOutputs - np.max(nnOutputs, keepdims=True)
+            nnOutputs = np.exp(nnOutputs) / np.sum(np.exp(nnOutputs),
+                                                   keepdims=True)
+            scores = np.max(nnOutputs, axis=1)
+        else:
+            nnOutputs = nnOutputs - np.max(nnOutputs, axis=1, keepdims=True)
+            # nnOutputs.shape = (64, 10)
+            nnOutputs = np.exp(nnOutputs) / np.sum(np.exp(nnOutputs), axis=1,
+                                                   keepdims=True)
+            scores = np.max(nnOutputs, axis=1) # scores.shape = (64, )
         
         TF[i].append(scores)
     return scores

@@ -5,7 +5,9 @@ import argparse
 
 # model_names = list(map(lambda n: os.path.basename(n)[:-3],
 #                        glob.glob('models/[A-Za-z]*.py')))
-model_names = ['msdnet', 'msdnet_ge', 'IMTA_MSDNet', 'mobilenet_imagenet']
+model_names = ['msdnet', 'msdnet_ge', 'IMTA_MSDNet', 'mobilenet_imagenet',
+               'MadrysResnet', 'WideResnet', 'Resnet34', 'Resnet18',
+               'ResNet18', 'ResNet34']
 
 arg_parser = argparse.ArgumentParser(
                 description='Image classification PK main script')
@@ -180,7 +182,7 @@ mood_group.add_argument('-ml', '--layer', type=int,
 mood_group.add_argument('-mi', '--id', type=str,
                     default='cifar10', 
                     help='in distribution dataset: cifar10 or cifar100')
-mood_group.add_argument('-mo', '--od', type=list, 
+mood_group.add_argument('-mo', '--od', type=list, nargs='+',
                     default=['mnist',
                              'kmnist',
                              'fasionmnist',
@@ -190,7 +192,9 @@ mood_group.add_argument('-mo', '--od', type=list,
                              'stl10',
                              'place365',
                              'isun',
-                             'lsunR'
+                             'lsunR',
+                             # 'TinyC',
+                             # 'TinyR'
                              ],
                     help='all 10 OOD datasets used in experiment')
 

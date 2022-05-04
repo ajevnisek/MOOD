@@ -1,0 +1,14 @@
+models/
+final_models/
+trained_models/
+final_logs/
+data/
+*.log
+*.pth
+fonal_logs/
+train_model/
+*.pyc
+*.npy
+complexity/
+.idea/
+trained_model/

@@ -1,0 +1,40 @@
+Files already downloaded and verified
+*************************************
+False 782 157
+*************************************
+11173962
+5
+Epoch: [1/157]	Time 0.947	Data 0.145	Loss 2.1738	Err@1 0.0000	Err@5 0.0000
+ * Err@1 29.160 Err@5 72.610
+ * Err@1 0.000 Err@5 0.000
+ * Err@1 0.000 Err@5 0.000
+ * Err@1 0.000 Err@5 0.000
+ * Err@1 0.000 Err@5 0.000
+calculating ood scores and complexity takes long time
+process  cifar10
+Files already downloaded and verified
+process  mnist
+process  kmnist
+process  fasionmnist
+process  lsun
+process  svhn
+process  dtd
+process  stl10
+Files already downloaded and verified
+process  place365
+process  isun
+process  lsunR
+********** auroc result  cifar10  with  odin  **********
+                         auroc                  fpr95    
+OOD dataset      exit@last    MOOD      exit@last    MOOD
+mnist             0.9808     0.9808      0.1054     0.1054
+kmnist            0.9822     0.9822      0.0819     0.0819
+fasionmnist       0.9873     0.9873      0.0558     0.0558
+lsun              0.9816     0.9816      0.0895     0.0895
+svhn              0.8921     0.8921      0.4709     0.4709
+dtd               0.8165     0.8165      0.5511     0.5511
+stl10             0.6437     0.6437      0.8449     0.8449
+place365          0.8723     0.8723      0.4685     0.4685
+isun              0.9477     0.9477      0.2201     0.2201
+lsunR             0.9601     0.9601      0.1745     0.1745
+average           0.9064     0.9064      0.3062     0.3062

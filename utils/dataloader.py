@@ -29,6 +29,12 @@ def get_dataloader(name,normalizer,bs):
         dataloader = isun(normalizer,bs)
     elif name == 'celebA':
         dataloader = celebA(normalizer,bs)
+    elif name == 'TinyC':
+        dataloader = tinyC(normalizer, bs)
+    elif name == 'TinyR':
+        dataloader = tinyR(normalizer, bs)
+    elif name == 'ImageNet30':
+        dataloader = imagenet30(normalizer, bs)
     else:
         print('the dataset is not used in this project')
         return None
@@ -256,4 +262,60 @@ def isun(normalizer,bs):
                 num_workers=1, 
                 pin_memory=True)
     return dataloader
-   
+
+
+def tinyC(normalizer, bs):
+    import torchvision
+    transformer = transforms.Compose([transforms.Resize(32),
+                                      # transforms.CenterCrop(32),
+                                      transforms.ToTensor(),
+                                      normalizer
+                                      ])
+    tinyc_dataset = torchvision.datasets.ImageFolder(
+        "data/Tiny-Imagenet-Crop/",
+        transform=transformer)
+
+    dataloader = torch.utils.data.DataLoader(
+        tinyc_dataset,
+        batch_size=bs,
+        shuffle=False,
+        num_workers=1,
+        pin_memory=True)
+    return dataloader
+
+
+def tinyR(normalizer, bs):
+    import torchvision
+    transformer = transforms.Compose([transforms.Resize(32),
+                                      # transforms.CenterCrop(32),
+                                      transforms.ToTensor(),
+                                      normalizer
+                                      ])
+    tinyr_dataset = torchvision.datasets.ImageFolder(
+        "data/Tiny-Imagenet-Resize/",
+        transform=transformer)
+    dataloader = torch.utils.data.DataLoader(
+        tinyr_dataset,
+        batch_size=bs,
+        shuffle=False,
+        num_workers=1,
+        pin_memory=True)
+    return dataloader
+
+def imagenet30(normalizer, bs):
+    import torchvision
+    transformer = transforms.Compose([transforms.Resize(32),
+                                      # transforms.CenterCrop(32),
+                                      transforms.ToTensor(),
+                                      normalizer
+                                      ])
+    tinyr_dataset = torchvision.datasets.ImageFolder(
+        "data/ImageNet-30/one_class_test",
+        transform=transformer)
+    dataloader = torch.utils.data.DataLoader(
+        tinyr_dataset,
+        batch_size=bs,
+        shuffle=False,
+        num_workers=1,
+        pin_memory=True)
+    return dataloader

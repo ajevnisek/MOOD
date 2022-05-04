@@ -81,8 +81,10 @@ if 1:#load and test model
         mood_args.num_classes = 100
     else:
         print('dataset not support!')
-    
-    model = getattr(models, mood_args.arch)(mood_args)
+    if 'resnet' in mood_args.arch.lower():
+        model = getattr(models, mood_args.arch)(mood_args.num_classes)
+    else:
+        model = getattr(models, mood_args.arch)(mood_args)
     model = torch.nn.DataParallel(model).cuda()
     
     criterion = nn.CrossEntropyLoss().cuda()
@@ -93,8 +95,12 @@ if 1:#load and test model
     print("*************************************")
     print(mood_args.use_valid, len(train_loader), len(val_loader))
     print("*************************************")
-    
-    model.load_state_dict(torch.load(mood_args.file)['state_dict'])
+    if 'resnet' in mood_args.arch.lower():
+        model.load_state_dict({
+            'module.'+k: v
+            for k,v in torch.load(mood_args.file)['net'].items()})
+    else:
+        model.load_state_dict(torch.load(mood_args.file)['state_dict'])
     print(sum(p.numel() for p in model.parameters() if p.requires_grad))
     
     model.eval()
@@ -119,6 +125,24 @@ else:
 normalizer = transforms.Normalize(mean=MEAN, std=STD)
 print('calculating ood scores and complexity takes long time')
 print('process ',mood_args.id)
+
+
+
+class Identity(object):
+    """Convert ndarrays in sample to Tensors."""
+
+    def __call__(self, sample):
+        return sample
+
+
+if 'resnet' in mood_args.arch.lower():
+    normalizer = Identity()
+if mood_args.od[0] == ['T']:
+    mood_args.od = ['TinyC', 'TinyR']
+if mood_args.od[0] == ['1', '0']:
+    mood_args.od = ['cifar10']
+if mood_args.od[0] == ['1', '0', '0']:
+    mood_args.od = ['cifar100']
 
 dataloader = get_dataloader(mood_args.id, normalizer, mood_args.bs)
 if mood_args.score == 'mahalanobis':

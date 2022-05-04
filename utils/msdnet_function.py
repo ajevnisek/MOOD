@@ -44,7 +44,10 @@ def validate(val_loader, model, criterion):
             data_time.update(time.time() - end)
 
             # compute output
-            output, _ = model(input_var)
+            try:
+                output, _ = model(input_var)
+            except:
+                output = model(input_var)
             if not isinstance(output, list):
                 output = [output]
 
