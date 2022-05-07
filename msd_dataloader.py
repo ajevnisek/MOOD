@@ -3,7 +3,7 @@ import torchvision.datasets as dset
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
 import os
-
+import torchvision
 
 def msd_get_dataloaders(args):
     train_loader, val_loader, test_loader = None, None, None
@@ -37,6 +37,23 @@ def msd_get_dataloaders(args):
                                         transforms.ToTensor(),
                                         normalize
                                     ]))
+    elif args.data == 'imagenet30':
+        transform_train = transforms.Compose([
+            transforms.Resize(254),
+            transforms.RandomCrop(254, padding=4),
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+        ])
+        transform_test = transforms.Compose([
+            transforms.Resize((254, 254)),
+            transforms.ToTensor(),
+        ])
+        train_set = torchvision.datasets.ImageFolder(
+            "data/ImageNet-30/one_class_train",
+            transform=transform_train)
+        val_set = torchvision.datasets.ImageFolder(
+            "data/ImageNet-30/one_class_test",
+            transform=transform_test)
     else:
         # ImageNet
         traindir = os.path.join(args.data_root, 'train')

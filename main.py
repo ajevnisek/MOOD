@@ -75,8 +75,12 @@ if 1:#load and test model
     else:
         mood_args.splits = ['train', 'val']
     mood_args.data = mood_args.id
+    is_large_image = False
     if mood_args.data == 'cifar10':
         mood_args.num_classes = 10
+    elif mood_args.data == 'imagenet30':
+        mood_args.num_classes = 30
+        is_large_image = True
     elif mood_args.data == 'cifar100':
         mood_args.num_classes = 100
     else:
@@ -119,6 +123,10 @@ elif mood_args.id == 'cifar100':
     MEAN=[0.5071, 0.4867, 0.4408]
     STD=[0.2675, 0.2565, 0.2761]
     NM = [MEAN,STD]
+elif mood_args.id == 'imagenet30':
+    MEAN=[0.5071, 0.4867, 0.4408]
+    STD=[0.2675, 0.2565, 0.2761]
+    NM = [MEAN,STD]
 else:
     print('wrong indistribution dataset! use cifar10 or cifar100!')
     
@@ -126,6 +134,12 @@ normalizer = transforms.Normalize(mean=MEAN, std=STD)
 print('calculating ood scores and complexity takes long time')
 print('process ',mood_args.id)
 
+if mood_args.od[0] == ['T']:
+    mood_args.od = ['TinyC', 'TinyR']
+if mood_args.od[0] == ['1', '0']:
+    mood_args.od = ['cifar10']
+if mood_args.od[0] == ['1', '0', '0']:
+    mood_args.od = ['cifar100']
 
 
 class Identity(object):
@@ -137,18 +151,15 @@ class Identity(object):
 
 if 'resnet' in mood_args.arch.lower():
     normalizer = Identity()
-if mood_args.od[0] == ['T']:
-    mood_args.od = ['TinyC', 'TinyR']
-if mood_args.od[0] == ['1', '0']:
-    mood_args.od = ['cifar10']
-if mood_args.od[0] == ['1', '0', '0']:
-    mood_args.od = ['cifar100']
 
-dataloader = get_dataloader(mood_args.id, normalizer, mood_args.bs)
+dataloader = get_dataloader(mood_args.id, normalizer, mood_args.bs, is_large_image)
 if mood_args.score == 'mahalanobis':
     print('processing mahalanobis parameters')
     if mood_args.id == 'cifar10':
         num_classes = 10
+        magnitude = 0.012
+    elif mood_args.id == 'imagenet30':
+        num_classes = 30
         magnitude = 0.012
     elif mood_args.id == 'cifar100':
         num_classes = 100
@@ -214,7 +225,7 @@ auroc_for_barplot = []
 complexity_for_arplot = []
 for o_name in mood_args.od:
     print('process ',o_name)
-    dataloader = get_dataloader(o_name, normalizer, mood_args.bs)
+    dataloader = get_dataloader(o_name, normalizer, mood_args.bs, is_large_image)
     o_score, o_adjusted_score, o_complexity = get_ood_score(data_name=o_name,
                            model=model,
                            L=mood_args.layer,
@@ -228,10 +239,18 @@ for o_name in mood_args.od:
                            )
     auroc_base.append(auroc(i_score[-1], o_score[-1]))
     fpr95_base.append(fpr95(i_score[-1], o_score[-1]))
-    auroc_mood.append(auroc(i_adjusted_score, o_adjusted_score))
-    fpr95_mood.append(fpr95(i_adjusted_score, o_adjusted_score))
-    auroc_for_barplot.append([auroc(i_score[i], o_score[i]) for i in range(mood_args.layer)])
-    complexity_for_arplot.append(o_complexity)
+    try:
+        auroc_mood.append(auroc(i_adjusted_score, o_adjusted_score))
+        fpr95_mood.append(fpr95(i_adjusted_score, o_adjusted_score))
+    except:
+        print(f"Skipped claculation at OOD: {o_name}...")
+        auroc_mood.append(auroc(i_score[-1], o_score[-1]))
+        fpr95_mood.append(fpr95(i_score[-1], o_score[-1]))
+    try:
+        auroc_for_barplot.append([auroc(i_score[i], o_score[i]) for i in range(mood_args.layer)])
+        complexity_for_arplot.append(o_complexity)
+    except:
+        print(f"Skipping something unclear...")
 
 print('********** auroc result ',mood_args.id,' with ',mood_args.score,' **********')
 print('                         auroc                  fpr95    ')

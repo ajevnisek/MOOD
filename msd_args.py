@@ -7,7 +7,7 @@ import argparse
 #                        glob.glob('models/[A-Za-z]*.py')))
 model_names = ['msdnet', 'msdnet_ge', 'IMTA_MSDNet', 'mobilenet_imagenet',
                'MadrysResnet', 'WideResnet', 'Resnet34', 'Resnet18',
-               'ResNet18', 'ResNet34']
+               'ResNet18', 'ResNet34', 'ResNet18ForImagenet30']
 
 arg_parser = argparse.ArgumentParser(
                 description='Image classification PK main script')
@@ -37,7 +37,7 @@ data_group = arg_parser.add_argument_group('data', 'dataset setting')
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 data_group.add_argument('--data', metavar='D', default='cifar100',
-                        choices=['cifar10', 'cifar100', 'ImageNet'],
+                        choices=['cifar10', 'cifar100', 'ImageNet', 'imagenet30'],
                         help='data to work on')
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
