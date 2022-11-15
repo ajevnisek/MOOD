@@ -124,7 +124,12 @@ def sample_estimator(model, num_classes, feature_list, data_loader):
                 out_features[i] = torch.mean(out_features[i].data, 2)
                 
             # compute the accuracy
-            output = output[-1]
+            # try:
+            #     output_ = output[-1]
+            #     pred = output_.data.max(1)[1]
+            #     output = output_
+            # except:
+            #     pred = output.data.max(1)[1]
             pred = output.data.max(1)[1]
             equal_flag = pred.eq(target.cuda()).cpu()
             correct += equal_flag.sum()
@@ -264,7 +269,7 @@ def get_ood_score(data_name, model, L, dataloader, score_type, threshold, NM,
         
     num=0
     for images, labels in dataloader:
-
+        import ipdb; ipdb.set_trace()
         if cal_complexity==True:
             complexity.append(calculate_complex(images,NM))
 

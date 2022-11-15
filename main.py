@@ -86,7 +86,8 @@ if 1:#load and test model
     else:
         print('dataset not support!')
     if 'resnet' in mood_args.arch.lower():
-        model = getattr(models, mood_args.arch)(mood_args.num_classes)
+        model = getattr(models, mood_args.arch)(mood_args.num_classes,
+                                                is_return_features=mood_args.score == 'mahalanobis')
     else:
         model = getattr(models, mood_args.arch)(mood_args)
     model = torch.nn.DataParallel(model).cuda()
@@ -141,6 +142,8 @@ if mood_args.od[0] == ['1', '0']:
 if mood_args.od[0] == ['1', '0', '0']:
     mood_args.od = ['cifar100']
 
+
+mood_args.od = ['lsun']
 
 class Identity(object):
     """Convert ndarrays in sample to Tensors."""
@@ -239,6 +242,8 @@ for o_name in mood_args.od:
                            )
     auroc_base.append(auroc(i_score[-1], o_score[-1]))
     fpr95_base.append(fpr95(i_score[-1], o_score[-1]))
+    print(f"{o_name}: AUROC: {auroc(i_score[-1], o_score[-1])} | "
+          f"FPR95: {fpr95(i_score[-1], o_score[-1])}")
     try:
         auroc_mood.append(auroc(i_adjusted_score, o_adjusted_score))
         fpr95_mood.append(fpr95(i_adjusted_score, o_adjusted_score))

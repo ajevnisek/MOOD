@@ -13,3 +13,5 @@ complexity/
 .idea/
 trained_model/
 complexity/
+run_mahalanobis_benchmark.sh
+mahalanobis_parameters/

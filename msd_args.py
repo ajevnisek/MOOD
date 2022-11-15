@@ -7,7 +7,8 @@ import argparse
 #                        glob.glob('models/[A-Za-z]*.py')))
 model_names = ['msdnet', 'msdnet_ge', 'IMTA_MSDNet', 'mobilenet_imagenet',
                'MadrysResnet', 'WideResnet', 'Resnet34', 'Resnet18',
-               'ResNet18', 'ResNet34', 'ResNet18ForImagenet30']
+               'ResNet18', 'ResNet34', 'ResNet18ForImagenet30',
+               'PretrainedResNet18Imagenet']
 
 arg_parser = argparse.ArgumentParser(
                 description='Image classification PK main script')
