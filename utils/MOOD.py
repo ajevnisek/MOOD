@@ -269,7 +269,6 @@ def get_ood_score(data_name, model, L, dataloader, score_type, threshold, NM,
         
     num=0
     for images, labels in dataloader:
-        import ipdb; ipdb.set_trace()
         if cal_complexity==True:
             complexity.append(calculate_complex(images,NM))
 
